@@ -1,0 +1,61 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway Service
+      - url: /ms-menu/v3/api-docs
+        name: ms-menu
+      - url: /ms-order/v3/api-docs
+        name: ms-order
+      - url: /ms-payment/v3/api-docs
+        name: ms-payment
+      - url: /ms-kitchen/v3/api-docs
+        name: ms-kitchen
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: MS-MENU
+              uri: lb://MS-MENU
+              predicates:
+                - Path=/api/v1/menu-items/**,/ms-menu/v3/api-docs
+
+            - id: MS-PAYMENT
+              uri: lb://MS-PAYMENT
+              predicates:
+                - Path=/api/v1/payment/**,/ms-payment/v3/api-docs
+
+            - id: MS-ORDER
+              uri: lb://MS-ORDER
+              predicates:
+                - Path=/api/v1/order/**,/ms-order/v3/api-docs
+
+            - id: MS-KITCHEN
+              uri: lb://MS-KITCHEN
+              predicates:
+                - Path=/api/v1/kitchen/**,/ms-kitchen/v3/api-docs
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER}:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

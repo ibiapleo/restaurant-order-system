@@ -1,0 +1,121 @@
+version: "3.8"
+
+services:
+  postgres-ms-menu:
+    image: postgres
+    container_name: postgres-ms-menu
+    restart: always
+    environment:
+      - POSTGRES_DB=db_ms-menu
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres-menu
+
+  ms-menu:
+    container_name: ms-menu
+    build:
+      context: ./menu-service
+      dockerfile: Dockerfile
+    environment:
+      - EUREKA_SERVER=service-registry
+      - POSTGRES_HOST=postgres-ms-menu
+      - POSTGRES_PORT=5432
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - service-registry
+      - postgres-ms-menu
+      - zipkin
+    networks:
+      - spring
+      - postgres-menu
+
+  postgres-ms-kitchen:
+    image: postgres
+    container_name: postgres-ms-kitchen
+    restart: always
+    environment:
+      - POSTGRES_DB=db_ms-kitchen
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5433:5432"
+    networks:
+      - postgres-kitchen
+
+  postgres-ms-order:
+    image: postgres
+    container_name: postgres-ms-order
+    restart: always
+    environment:
+      - POSTGRES_DB=db_ms-order
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5434:5432"
+    networks:
+      - postgres-order
+  postgres-ms-payment:
+    image: postgres
+    container_name: postgres-ms-payment
+    restart: always
+    environment:
+      - POSTGRES_DB=db_ms-payment
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5435:5432"
+    networks:
+      - postgres-payment
+
+  service-registry:
+    container_name: service-registry
+    build:
+      context: ./service-registry
+      dockerfile: Dockerfile
+    environment:
+      - ZIPKIN_HOST=zipkin
+    ports:
+      - "8761:8761"
+    depends_on:
+      - zipkin
+    networks:
+      - spring
+
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    environment:
+      - EUREKA_SERVER=service-registry
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - service-registry
+      - zipkin
+    networks:
+      - spring
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - spring
+
+networks:
+  spring:
+    driver: bridge
+  postgres-menu:
+    driver: bridge
+  postgres-order:
+    driver: bridge
+  postgres-payment:
+    driver: bridge
+  postgres-kitchen:
+    driver: bridge
