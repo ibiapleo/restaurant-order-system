@@ -1,0 +1,129 @@
+package com.restaurant.order.service;
+
+import com.restaurant.order.exceptions.CustomerNotFoundException;
+import com.restaurant.order.exceptions.OrderNotFoundException;
+import com.restaurant.order.exceptions.TableNotFoundException;
+import com.restaurant.order.model.*;
+import com.restaurant.order.model.dtos.orders.OrderItemResponseDTO;
+import com.restaurant.order.model.dtos.orders.OrderRequestDTO;
+import com.restaurant.order.model.dtos.orders.OrderResponseDTO;
+import com.restaurant.order.model.enums.OrderStatus;
+import com.restaurant.order.repository.CustomerRepository;
+import com.restaurant.order.repository.OrderRepository;
+import com.restaurant.order.repository.TableRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+
+    private final OrderRepository orderRepository;
+    private final CustomerRepository customerRepository;
+    private final TableRepository tableRepository;
+    private final ModelMapper modelMapper;
+
+    @Transactional
+    public OrderResponseDTO createOrder(OrderRequestDTO orderRequest) {
+
+        Customer customer = customerRepository.findById(orderRequest.getCustomerId())
+                .orElseThrow(() -> new CustomerNotFoundException(orderRequest.getCustomerId()));
+
+        Table table = tableRepository.findById(orderRequest.getTableId())
+                .orElseThrow(() -> new TableNotFoundException(orderRequest.getTableId()));
+
+        Order order = modelMapper.map(orderRequest, Order.class);
+        order.setTable(table);
+        order.setCustomer(customer);
+        order.setStatus(OrderStatus.PENDING);
+        order.setCreatedAt(LocalDateTime.now());
+
+        List<OrderItem> items = orderRequest.getItems().stream()
+                .map(itemDTO -> {
+                    OrderItem item = modelMapper.map(itemDTO, OrderItem.class);
+                    item.setOrder(order);
+                    // TODO: calcular subtotal do item usando MenuService quando disponível
+                    item.setSubtotal(0.0);
+                    return item;
+                }).collect(Collectors.toList());
+
+        order.setItems(items);
+
+        double total = items.stream().mapToDouble(OrderItem::getSubtotal).sum();
+        order.setTotalAmount(total);
+
+        Order savedOrder = orderRepository.save(order);
+
+        OrderResponseDTO responseDTO = modelMapper.map(savedOrder, OrderResponseDTO.class);
+        responseDTO.setItems(savedOrder.getItems().stream()
+                .map(i -> modelMapper.map(i, OrderItemResponseDTO.class))
+                .collect(Collectors.toList()));
+        return responseDTO;
+    }
+
+    public void updateOrderStatus(UUID orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+
+        order.setStatus(status);
+    }
+
+    public OrderResponseDTO updateOrder(UUID orderId, OrderRequestDTO orderRequestDTO) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+
+        if (orderRequestDTO.getCustomerId() != null) {
+            order.setCustomer(modelMapper.map(orderRequestDTO.getCustomerId(), Customer.class));
+        }
+        if (orderRequestDTO.getTableId() != null) {
+            order.setTable(modelMapper.map(orderRequestDTO.getTableId(), Table.class));
+        }
+        if (orderRequestDTO.getItems() != null) {
+            order.getItems().clear();
+            changeItems(orderRequestDTO, order);
+        }
+
+        return modelMapper.map(order, OrderResponseDTO.class);
+    }
+
+    public List<OrderResponseDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(order -> modelMapper.map(order, OrderResponseDTO.class))
+                .toList();
+    }
+
+    public OrderResponseDTO getOrderById(UUID id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+        return modelMapper.map(order, OrderResponseDTO.class);
+    }
+
+    public void deleteOrder(UUID id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+
+        orderRepository.delete(order);
+    }
+
+    private void changeItems(OrderRequestDTO orderRequestDTO, Order order) {
+        List<OrderItem> items = orderRequestDTO.getItems().stream()
+                .map(i -> {
+                    OrderItem item = modelMapper.map(i, OrderItem.class);
+                    item.setOrder(order);
+                    item.setSubtotal(0.0); // TODO: calcular subtotal depois com MenuService
+                    return item;
+                }).collect(Collectors.toList());
+        order.setItems(items);
+        double total = items.stream().mapToDouble(OrderItem::getSubtotal).sum();
+        order.setTotalAmount(total);
+    }
+
+}
