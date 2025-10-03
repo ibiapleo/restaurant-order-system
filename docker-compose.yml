@@ -57,6 +57,7 @@ services:
       - "5434:5432"
     networks:
       - postgres-order
+
   postgres-ms-payment:
     image: postgres
     container_name: postgres-ms-payment
@@ -68,6 +69,24 @@ services:
     ports:
       - "5435:5432"
     networks:
+      - postgres-payment
+
+  ms-payment:
+    container_name: ms-payment
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    environment:
+      - EUREKA_SERVER=service-registry
+      - POSTGRES_HOST=postgres-ms-payment
+      - POSTGRES_PORT=5432
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - service-registry
+      - postgres-ms-payment
+      - zipkin
+    networks:
+      - spring
       - postgres-payment
 
   service-registry:
