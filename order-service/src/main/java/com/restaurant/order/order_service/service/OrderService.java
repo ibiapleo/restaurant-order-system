@@ -33,6 +33,7 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final TableRepository tableRepository;
     private final ModelMapper modelMapper;
+    private final OrderProducer orderProducer;
 
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequest) {
@@ -43,7 +44,7 @@ public class OrderService {
         Table table = tableRepository.findById(orderRequest.getTableId())
                 .orElseThrow(() -> new TableNotFoundException(orderRequest.getTableId()));
 
-        Order order = modelMapper.map(orderRequest, Order.class);
+        Order order = new Order();
         order.setTable(table);
         order.setCustomer(customer);
         order.setStatus(OrderStatus.PENDING);
@@ -51,7 +52,9 @@ public class OrderService {
 
         List<OrderItem> items = orderRequest.getItems().stream()
                 .map(itemDTO -> {
-                    OrderItem item = modelMapper.map(itemDTO, OrderItem.class);
+                    OrderItem item = new OrderItem();
+                    item.setMenuItemId(itemDTO.getMenuItemId());
+                    item.setQuantity(itemDTO.getQuantity());
                     item.setOrder(order);
                     // TODO: calcular subtotal do item usando MenuService quando disponível
                     item.setSubtotal(0.0);
@@ -69,6 +72,9 @@ public class OrderService {
         responseDTO.setItems(savedOrder.getItems().stream()
                 .map(i -> modelMapper.map(i, OrderItemResponseDTO.class))
                 .collect(Collectors.toList()));
+
+        orderProducer.publishOrderCreated(responseDTO);
+
         return responseDTO;
     }
 
@@ -97,6 +103,9 @@ public class OrderService {
         return modelMapper.map(order, OrderResponseDTO.class);
     }
 
+    public void updateOrder(OrderResponseDTO event, OrderStatus status) {
+        orderRepository.updateOrder(event.getId(), status.name());
+    }
     public List<OrderResponseDTO> getAllOrders() {
         return orderRepository.findAll().stream()
                 .map(order -> modelMapper.map(order, OrderResponseDTO.class))
