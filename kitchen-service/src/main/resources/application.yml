@@ -1,0 +1,51 @@
+server:
+  port: 8400
+  servlet:
+    context-path: /
+
+openapi:
+  service:
+    title: ms-kitchen
+    version: 1.0.0
+    url: http://localhost:9090
+springdoc:
+  api-docs:
+    path: /ms-kitchen/v3/api-docs
+  swagger-ui:
+    path: /ms-kitchen/swagger-ui.html
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ms-kitchen-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    admin:
+      auto-create: true
+  application:
+    name: MS-KITCHEN
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:db_ms-kitchen}
+    username: ${POSTGRES_USER:root}
+    password: ${POSTGRES_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show_sql: true
+    defer-datasource-initialization: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER:localhost}:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+    enabled: true

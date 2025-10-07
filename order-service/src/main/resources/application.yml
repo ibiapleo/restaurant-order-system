@@ -1,0 +1,43 @@
+server:
+  port: 8300
+  servlet:
+    context-path: /
+
+openapi:
+  service:
+    title: ms-order
+    version: 1.0.0
+    url: http://localhost:9090
+springdoc:
+  api-docs:
+    path: /ms-order/v3/api-docs
+  swagger-ui:
+    path: /ms-order/swagger-ui.html
+
+spring:
+  application:
+    name: MS-ORDER
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5434}/${POSTGRES_DB:db_ms-order}
+    username: ${POSTGRES_USER:root}
+    password: ${POSTGRES_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show_sql: true
+    defer-datasource-initialization: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER:localhost}:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+    enabled: true
+
+services:
+  menu:
+    url: ${MENU_SERVICE_URL:http://localhost:8300}

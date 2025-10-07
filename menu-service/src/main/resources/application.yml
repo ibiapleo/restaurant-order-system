@@ -1,0 +1,39 @@
+server:
+  port: 8100
+  servlet:
+    context-path: /
+
+openapi:
+  service:
+    title: ms-menu
+    version: 1.0.0
+    url: http://localhost:9090
+springdoc:
+  api-docs:
+    path: /ms-menu/v3/api-docs
+  swagger-ui:
+    path: /ms-menu/swagger-ui.html
+
+spring:
+  application:
+    name: MS-MENU
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:db_ms-menu}
+    username: ${POSTGRES_USER:root}
+    password: ${POSTGRES_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show_sql: true
+    defer-datasource-initialization: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER}:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+    enabled: true
