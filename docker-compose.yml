@@ -45,6 +45,24 @@ services:
     networks:
       - postgres-kitchen
 
+  ms-kitchen:
+    container_name: ms-kitchen
+    build:
+      context: ./kitchen-service
+      dockerfile: Dockerfile
+    environment:
+      - EUREKA_SERVER=service-registry
+      - POSTGRES_HOST=postgres-ms-kitchen
+      - POSTGRES_PORT=5432
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - service-registry
+      - postgres-ms-kitchen
+      - zipkin
+    networks:
+      - spring
+      - postgres-kitchen
+
   postgres-ms-order:
     image: postgres
     container_name: postgres-ms-order
@@ -56,6 +74,25 @@ services:
     ports:
       - "5434:5432"
     networks:
+      - postgres-order
+
+  ms-order:
+    container_name: ms-order
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    environment:
+      - EUREKA_SERVER=service-registry
+      - POSTGRES_HOST=postgres-ms-order
+      - POSTGRES_PORT=5432
+      - ZIPKIN_HOST=zipkin
+      - MENU_SERVICE_URL=http://ms-menu:8300
+    depends_on:
+      - service-registry
+      - postgres-ms-order
+      - zipkin
+    networks:
+      - spring
       - postgres-order
 
   postgres-ms-payment:

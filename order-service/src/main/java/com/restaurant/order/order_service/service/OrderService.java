@@ -1,5 +1,6 @@
 package com.restaurant.order.order_service.service;
 
+import com.restaurant.order.order_service.client.MenuServiceClient;
 import com.restaurant.order.order_service.exceptions.CustomerNotFoundException;
 import com.restaurant.order.order_service.exceptions.OrderNotFoundException;
 import com.restaurant.order.order_service.exceptions.TableNotFoundException;
@@ -7,6 +8,7 @@ import com.restaurant.order.order_service.model.Customer;
 import com.restaurant.order.order_service.model.Order;
 import com.restaurant.order.order_service.model.OrderItem;
 import com.restaurant.order.order_service.model.Table;
+import com.restaurant.order.order_service.model.dtos.MenuItemResponse;
 import com.restaurant.order.order_service.model.dtos.orders.OrderItemResponseDTO;
 import com.restaurant.order.order_service.model.dtos.orders.OrderRequestDTO;
 import com.restaurant.order.order_service.model.dtos.orders.OrderResponseDTO;
@@ -34,6 +36,7 @@ public class OrderService {
     private final TableRepository tableRepository;
     private final ModelMapper modelMapper;
     private final OrderProducer orderProducer;
+    private final MenuServiceClient menuServiceClient;
 
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequest) {
@@ -56,10 +59,14 @@ public class OrderService {
                     item.setMenuItemId(itemDTO.getMenuItemId());
                     item.setQuantity(itemDTO.getQuantity());
                     item.setOrder(order);
-                    // TODO: calcular subtotal do item usando MenuService quando disponível
-                    item.setSubtotal(0.0);
+
+                    MenuItemResponse menuItem = menuServiceClient.getMenuItemById(itemDTO.getMenuItemId());
+                    double subtotal = menuItem.getPrice() * itemDTO.getQuantity();
+
+                    item.setSubtotal(subtotal);
                     return item;
-                }).collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
 
         order.setItems(items);
 
