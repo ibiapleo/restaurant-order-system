@@ -1,5 +1,7 @@
 # 🍽️ Sistema de Pedidos de Restaurante — Arquitetura Distribuída
 
+ALUNOS: Leonardo Ibiapina, Gabriel Moraes, Ênio Bazante, Cauã Jordão, João Marcolino, Victor Barbosa
+
 ## 📘 Título
 **Sistema de Pedidos de Restaurante Baseado em Arquitetura Distribuída com Conceitos de Concorrência e Paralelismo**
 
