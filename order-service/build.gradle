@@ -36,6 +36,7 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
     implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

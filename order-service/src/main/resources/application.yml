@@ -15,6 +15,18 @@ springdoc:
     path: /ms-order/swagger-ui.html
 
 spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ms-order-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    admin:
+      auto-create: true
   application:
     name: MS-ORDER
   datasource:
@@ -40,4 +52,4 @@ eureka:
 
 services:
   menu:
-    url: ${MENU_SERVICE_URL:http://localhost:8300}
+    url: ${MENU_SERVICE_URL:http://localhost:9090}

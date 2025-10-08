@@ -53,6 +53,7 @@ services:
     environment:
       - EUREKA_SERVER=service-registry
       - POSTGRES_HOST=postgres-ms-kitchen
+      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
       - POSTGRES_PORT=5432
       - ZIPKIN_HOST=zipkin
     depends_on:
@@ -84,6 +85,7 @@ services:
     environment:
       - EUREKA_SERVER=service-registry
       - POSTGRES_HOST=postgres-ms-order
+      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
       - POSTGRES_PORT=5432
       - ZIPKIN_HOST=zipkin
       - MENU_SERVICE_URL=http://ms-menu:8300

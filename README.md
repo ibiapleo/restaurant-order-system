@@ -50,6 +50,36 @@ Intermedia a comunicação assíncrona entre o **Servico_de_Pedido** e o **Servi
 
 ---
 
+## 🚀 Como Rodar o Projeto
+
+### 🧩 Pré-requisitos
+- **Docker** e **Docker Compose** instalados.
+
+### ▶️ Executando o Sistema
+
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/ibiapleo/restaurant-order-system.git
+   cd restaurant-order-system
+   ```
+   
+2. Suba todos os serviços com o Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
+   
+3. Os serviços serão inicializados automaticamente e estarão disponíveis nas portas configuradas (consulte o arquivo docker-compose.yml).
+
+## 🌐 Acesso ao Swagger
+
+Cada microsserviço possui sua própria documentação interativa via Swagger UI. Após rodar o sistema, acesse os seguintes endpoints no navegador:
+
+- API Gateway: http://localhost:9090/swagger-ui/index.html?urls.primaryName=API+Gateway+Service
+
+### Exemplo da Interface Swagger
+
+![img_1.png](img_1.png)
+
 ### 🖼️ Diagrama da Arquitetura
 
 ![Arquitetura Distribuída - Sistema de Pedidos de Restaurante](ad08ee48-76a0-4794-ae83-570e0cd9e52d.png)

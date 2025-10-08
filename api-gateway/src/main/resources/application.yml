@@ -39,7 +39,7 @@ spring:
             - id: MS-ORDER
               uri: lb://MS-ORDER
               predicates:
-                - Path=/api/v1/order/**,/ms-order/v3/api-docs
+                - Path=/api/v1/orders/**, /api/v1/customer/**, /api/v1/table/**, /ms-order/v3/api-docs
 
             - id: MS-KITCHEN
               uri: lb://MS-KITCHEN
