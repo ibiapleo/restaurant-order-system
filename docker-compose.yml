@@ -88,7 +88,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=broker:29092
       - POSTGRES_PORT=5432
       - ZIPKIN_HOST=zipkin
-      - MENU_SERVICE_URL=http://ms-menu:8300
+      - MENU_SERVICE_URL=http://ms-menu:8100
     depends_on:
       - service-registry
       - postgres-ms-order
