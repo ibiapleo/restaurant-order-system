@@ -1,6 +1,3 @@
-<img width="846" height="452" alt="image" src="https://github.com/user-attachments/assets/2555c768-9ea5-49eb-aa51-873a7fd822a1" />
-
-
 # 🍽️ Sistema de Pedidos de Restaurante — Arquitetura Distribuída
 
 ## 📘 Título
@@ -78,11 +75,13 @@ Cada microsserviço possui sua própria documentação interativa via Swagger UI
 
 ### Exemplo da Interface Swagger
 
-![img_1.png](img_1.png)
+<img width="2558" height="987" alt="image" src="https://github.com/user-attachments/assets/937d4b53-e4a1-4605-bfa4-4729fe5fbefe" />
 
 ### 🖼️ Diagrama da Arquitetura
 
-![Arquitetura Distribuída - Sistema de Pedidos de Restaurante](ad08ee48-76a0-4794-ae83-570e0cd9e52d.png)
+<img width="846" height="452" alt="image" src="https://github.com/user-attachments/assets/2555c768-9ea5-49eb-aa51-873a7fd822a1" />
+
+<img width="1600" height="535" alt="image" src="https://github.com/user-attachments/assets/31e5a2db-8a6d-444c-be96-6f4388084fee" />
 
 ---
 
